@@ -1,0 +1,107 @@
+<html>
+	<head>
+		<title>IP Address Thingy</title>
+	</head>
+	<body>
+		<div role="tabpanel" class="tab-pane fade" id="ip">                    
+			<div class="row">
+		    	<div class="col-xs-8" style="padding: 20px; border-right: 1px solid #dddddd;">
+		        	<span>Enter an IP Address</span>
+		        	<br>
+		        	<input placeholder="IP Address" type="text" id="other_ipaddress" style=" width: 100%;height: 46px;margin: 10px 0;font-size: 21px;padding: 5px 10px;">
+		        	<br><br>
+		        	<hr>
+		        	<input class="btn btn-primary btn-lg" type="button" value="Search" id="btn_searchCountry"> 
+		    	</div>
+		    	<div class="col-xs-4" style="padding: 20px;">
+		        	<strong id="txtIP">Your IP Address</strong>
+		        	<h2 id="your_ipaddress" style=" margin: 10px 0;"></h2>
+		        	<br>
+		        	<strong id="txtCountry">Your IP Country</strong>
+		        	<h2 id="your_country" style="margin: 10px 0;"></h2>
+		        	<br>
+		        	<a href="#" onclick="" id="myIP" style="display:none" >What's my IP Address?</a>
+		    	</div>
+			</div>
+	  	</div>
+	</body>
+	<footer>
+		<script src="jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="ip_addresses.js"></script>
+	</footer>
+</html>
+
+<script type="text/javascript">  
+  $(document).ready(function(){
+    var your_ip = $("#your_ipaddress").text();
+    $("#your_country").text(getCountry(your_ip));
+      
+    $("#btn_searchCountry").click(function(){ 
+      var txtOtherIP = ($("#other_ipaddress").val()).trim();
+      var isValid = /^[0-9.]*$/.test(txtOtherIP);  
+      var inValid = false;
+      for(var x=0; x<(txtOtherIP.split('.')).length; x++){
+        if(txtOtherIP.split('.')[x] == '')
+          inValid = true;
+      }
+      if(txtOtherIP == ""){
+        $("#other_ipaddress").val('');
+        alert("Hey hey hey! Do what you came here for!\nInput some IP Address dude!");
+        return false;
+      }
+      else if(isValid == false){
+        var inp = prompt("Ooops! Invalid Characters detected!\n (Please Follow Sample IP: 106.1.8.0)");
+        $("#other_ipaddress").val(inp.trim())
+        return false;
+      }
+      else if((txtOtherIP.split('.')).length != 4 || inValid == true){
+        $("#other_ipaddress").val('');
+        alert("What's that crap?!\nPlease enter some real IP Address man.");
+        return false;
+      }
+
+      var countryName = getCountry(txtOtherIP);    
+      countryName = countryName.replace(/([A-Z])/g, ' $1');
+      $("#your_ipaddress").text(txtOtherIP);
+      $("#your_country").text(countryName);
+      
+      $('#myIP').css("display","block");
+      $('#txtIP').text("IP Address");
+      $('#txtCountry').text("IP Address");
+    });
+    
+    $('#myIP').click(function(e){      
+      $("#your_ipaddress").text(your_ip);
+      $("#your_country").text(getCountry(your_ip));
+      $('#txtIP').text("Your IP Address");
+      $('#txtCountry').text("Your IP Address");
+      $('#myIP').css("display","none");
+      e.preventDefault();
+    }); 
+    
+    function getCountry(ipAdd){ 
+      var country = "";
+      for(var i=0; i<ip_addresses.length; i++){
+          var ip = ipAdd.split('.');//console.log(ip_addresses[i]);
+          if(ip.length == 4){
+            var num = 16777216 * parseInt(ip[0]) + 65536 * parseInt(ip[1]) + 256 * parseInt(ip[2]) + parseInt(ip[3]);
+            //alert("num: "+num+"---beg: "+ip_addresses[i].BeginningIP+":"+ip_addresses[i].EndingIP);
+            if(parseInt(num) >= parseInt(ip_addresses[i].BeginningIP) && parseInt(num) <= parseInt(ip_addresses[i].EndingIP)){
+              country = ip_addresses[i].CountryName;
+            }
+          } //else alert("Invalid IP Address!");              
+      }
+      return country;
+    }
+
+  });  
+</script>
+
+<script type="application/javascript">    
+       function getIP(json) { 
+          var ip = json.ip.split('.');
+          var num = 16777216 * parseInt(ip[0]) + 65536 * parseInt(ip[1]) + 256 * parseInt(ip[2]) + parseInt(ip[3]);
+          $("#your_ipaddress").text(json.ip);
+      }
+   </script>
+<script type="application/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
