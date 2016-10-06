@@ -34,7 +34,7 @@
 <script type="text/javascript"> 
   $(document).ready(function(){
   	var your_ip = "";
-  	$.getJSON("http://freegeoip.net/json/",function(data){
+  	$.getJSON("//freegeoip.net/json/",function(data){
   		your_ip = data.ip;
   		$("#your_ipaddress").text(data.ip);
   		$("#your_country").text(data.country_name);
