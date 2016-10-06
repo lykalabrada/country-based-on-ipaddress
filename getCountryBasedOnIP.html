@@ -31,10 +31,14 @@
 	</footer>
 </html>
 
-<script type="text/javascript">  
+<script type="text/javascript"> 
   $(document).ready(function(){
-    var your_ip = $("#your_ipaddress").text();
-    $("#your_country").text(getCountry(your_ip));
+  	var your_ip = "";
+  	$.getJSON("http://freegeoip.net/json/",function(data){
+  		your_ip = data.ip;
+  		$("#your_ipaddress").text(data.ip);
+  		$("#your_country").text(data.country_name);
+  	});    
       
     $("#btn_searchCountry").click(function(){ 
       var txtOtherIP = ($("#other_ipaddress").val()).trim();
@@ -82,26 +86,16 @@
     function getCountry(ipAdd){ 
       var country = "";
       for(var i=0; i<ip_addresses.length; i++){
-          var ip = ipAdd.split('.');//console.log(ip_addresses[i]);
+          var ip = ipAdd.split('.');
           if(ip.length == 4){
             var num = 16777216 * parseInt(ip[0]) + 65536 * parseInt(ip[1]) + 256 * parseInt(ip[2]) + parseInt(ip[3]);
-            //alert("num: "+num+"---beg: "+ip_addresses[i].BeginningIP+":"+ip_addresses[i].EndingIP);
             if(parseInt(num) >= parseInt(ip_addresses[i].BeginningIP) && parseInt(num) <= parseInt(ip_addresses[i].EndingIP)){
               country = ip_addresses[i].CountryName;
             }
-          } //else alert("Invalid IP Address!");              
+          } 
       }
       return country;
     }
 
   });  
 </script>
-
-<script type="application/javascript">    
-       function getIP(json) { 
-          var ip = json.ip.split('.');
-          var num = 16777216 * parseInt(ip[0]) + 65536 * parseInt(ip[1]) + 256 * parseInt(ip[2]) + parseInt(ip[3]);
-          $("#your_ipaddress").text(json.ip);
-      }
-   </script>
-<script type="application/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
